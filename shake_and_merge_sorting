@@ -1,0 +1,105 @@
+import random, time
+
+def generate_double_array(N):
+    array = []
+    for _ in range(N):
+        value = random.uniform(-1000.0, 1000.0)
+        array.append(value)
+    return array
+
+def generate_almost_sorted_array(N):
+    # Генерируем отсортированный массив
+    sorted_array = [float(i) / 100 for i in range(-100000, 100001)]
+
+    # Перемешиваем массив случайным образом
+    for _ in range(N // 20):  # 5% элементов (N / 20) перемешиваем
+        index1 = random.randint(0, len(sorted_array) - 1)
+        index2 = random.randint(0, len(sorted_array) - 1)
+        sorted_array[index1], sorted_array[index2] = sorted_array[index2], sorted_array[index1]
+
+    # Выбираем N элементов из перемешанного массива
+    return random.sample(sorted_array, N)
+
+# Пример использования
+N = 100 # Количество элементов в массиве
+not_sorted_array = generate_double_array(N)
+almost_sorted_array = generate_almost_sorted_array(N)
+
+def cocktail_sort(arr):
+    n = len(arr)
+    swapped = True
+    start = 0
+    end = n - 1
+
+    while swapped:
+        swapped = False
+
+        # Проходим по массиву сначала слева направо
+        for i in range(start, end):
+            if arr[i] > arr[i + 1]:
+                arr[i], arr[i + 1] = arr[i + 1], arr[i]
+                swapped = True
+
+        if not swapped:
+            break
+
+        swapped = False
+
+        # Уменьшаем end, так как самый большой элемент уже находится в конце
+        end -= 1
+
+        # Проходим по массиву справа налево
+        for i in range(end - 1, start - 1, -1):
+            if arr[i] > arr[i + 1]:
+                arr[i], arr[i + 1] = arr[i + 1], arr[i]
+                swapped = True
+
+        # Увеличиваем start, так как самый маленький элемент уже находится в начале
+        start += 1
+
+def merge_sort(arr):
+    if len(arr) > 1:
+        mid = len(arr) // 2
+        left_half = arr[:mid]
+        right_half = arr[mid:]
+
+        merge_sort(left_half)
+        merge_sort(right_half)
+
+        i = j = k = 0
+
+        while i < len(left_half) and j < len(right_half):
+            if left_half[i] < right_half[j]:
+                arr[k] = left_half[i]
+                i += 1
+            else:
+                arr[k] = right_half[j]
+                j += 1
+            k += 1
+
+        while i < len(left_half):
+            arr[k] = left_half[i]
+            i += 1
+            k += 1
+
+        while j < len(right_half):
+            arr[k] = right_half[j]
+            j += 1
+            k += 1
+
+start_time = time.time()
+cocktail_sort(not_sorted_array)
+end_time = time.time()
+print("Несортированный шейк:", round(end_time - start_time, 4))
+start_time = time.time()
+cocktail_sort(almost_sorted_array)
+end_time = time.time()
+print("Почти сортированный шейк:", round(end_time - start_time, 4))
+start_time = time.time()
+merge_sort(not_sorted_array)
+end_time = time.time()
+print("Несортированный слияние:", round(end_time - start_time, 4))
+start_time = time.time()
+merge_sort(almost_sorted_array)
+end_time = time.time()
+print("Почти сортированный слияние:", round(end_time - start_time, 4))
