@@ -58,8 +58,25 @@ A = [[5, 3, -9, -4, -2],
 
 b = [-9, -6, 8, -9, -7]
 
+def check_solution(A, b, x):
+    """
+    Проверяет решение путем подстановки в исходную систему и вычисления невязок.
+    """
+    residuals = []
+    for i in range(len(b)):
+        # Вычисляем невязку для каждого уравнения
+        residual = b[i]
+        for j in range(len(x)):
+            residual -= A[i][j] * x[j]
+        residuals.append(residual)
+    return residuals
+
 start_time = datetime.now()
 # Решение системы уравнений методом Гивенса
 solution = solve_givens(A, b)
 print("Решение x:", solution)
 print("Время:", datetime.now()-start_time)
+
+# Проверка решения
+residuals = check_solution(A, b, solution)
+print("Невязки:", residuals)
