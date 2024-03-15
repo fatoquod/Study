@@ -1,0 +1,65 @@
+from datetime import datetime
+
+def givens_rotation(a, b):
+    """
+    Вычисляет матрицу Гивенса G, которая обнуляет второй элемент вектора (a, b).
+    """
+    r = (a**2 + b**2)**0.5
+    c = a / r
+    s = -b / r
+    return c, s
+
+def apply_givens_rotation(G, i, j, A, b):
+    """
+    Применяет матрицу Гивенса G к строке i и j матрицы A и вектору b.
+    """
+    for k in range(len(A[0])):
+        # Вычисляем новые значения элементов матрицы A
+        A_ik = G[0][0] * A[i][k] + G[0][1] * A[j][k]
+        A_jk = G[1][0] * A[i][k] + G[1][1] * A[j][k]
+        A[i][k] = A_ik
+        A[j][k] = A_jk
+    # Вычисляем новые значения элементов вектора b
+    b_i = G[0][0] * b[i] + G[0][1] * b[j]
+    b_j = G[1][0] * b[i] + G[1][1] * b[j]
+    b[i] = b_i
+    b[j] = b_j
+    return A, b
+
+def solve_givens(A, b):
+    """
+    Решает систему уравнений Ax = b методом Гивенса.
+    """
+    n = len(A)
+    
+    # Приведение матрицы A и вектора b к верхнетреугольному виду
+    for j in range(n):
+        for i in range(n-1, j, -1):
+            c, s = givens_rotation(A[i-1][j], A[i][j])
+            G = [[c, s], [-s, c]]
+            A, b = apply_givens_rotation(G, i-1, i, A, b)
+    
+    # Решение треугольной системы методом обратной подстановки
+    x = [0] * n
+    for i in range(n-1, -1, -1):
+        x[i] = b[i]
+        for j in range(i+1, n):
+            x[i] -= A[i][j] * x[j]
+        x[i] /= A[i][i]
+    
+    return x
+
+# Заданные матрицы A и b
+A = [[5, 3, -9, -4, -2],
+     [-2, 2, -8, 8, -8],
+     [1, 2, -5, -4, -5],
+     [1, 8, 6, 5, 6],
+     [7, 8, -1, -3, -4]]
+
+b = [-9, -6, 8, -9, -7]
+
+start_time = datetime.now()
+# Решение системы уравнений методом Гивенса
+solution = solve_givens(A, b)
+print("Решение x:", solution)
+print("Время:", datetime.now()-start_time)
