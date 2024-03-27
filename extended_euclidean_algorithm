@@ -1,0 +1,25 @@
+def extended_euclidean_algorithm(a, b):
+    # Инициализация начальных значений
+    s_prev, t_prev, s, t = 1, 0, 0, 1
+    r_prev, r = a, b
+
+    while r != 0:
+        quotient = r_prev // r
+        r_prev, r = r, r_prev - quotient * r
+        s_prev, s = s, s_prev - quotient * s
+        t_prev, t = t, t_prev - quotient * t
+
+    return r_prev, s_prev, t_prev
+
+def check_gcd(a, b, gcd, s, t):
+    return a * s + b * t == gcd
+
+# Пример использования
+a = 48
+b = 18
+gcd, s, t = extended_euclidean_algorithm(a, b)
+print("НОД({}, {}) = {}".format(a, b, gcd))
+print("Коэффициенты s и t для уравнения {}*{} + {}*{} = {}".format(a, s, b, t, gcd))
+
+# Проверка
+print("Проверка коэффициентов:", check_gcd(a, b, gcd, s, t))
